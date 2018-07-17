@@ -44,11 +44,12 @@ import scala.concurrent.ExecutionContext
 /**
   * Provides the glue between guice and the core modules.
   */
-class CoreGuiceModule(config: Config) extends AbstractModule {
-  @Provides @Singleton
-  def provideConfig(): Config = config
-
+class CoreGuiceModule(cliConf: MarathonConf) extends AbstractModule {
   // Export classes used outside of core to guice
+
+  @Provides @Singleton
+  def config(coreModule: CoreModule): Config = coreModule.config
+
   @Provides @Singleton
   def electionService(coreModule: CoreModule): ElectionService = coreModule.electionModule.service
 
@@ -60,6 +61,9 @@ class CoreGuiceModule(config: Config) extends AbstractModule {
 
   @Provides @Singleton
   def taskKillService(coreModule: CoreModule): KillService = coreModule.taskTerminationModule.taskKillService
+
+  @Provides @Singleton
+  def metricsModule(coreModule: CoreModule): MetricsModule = coreModule.metricsModule
 
   @Provides @Singleton
   @SuppressWarnings(Array("UnusedMethodParameter"))
